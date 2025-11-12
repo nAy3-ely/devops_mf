@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  nayeapp:
+    image: nayeimg:latest
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nayeapp.entrypoints=http"
+        - "traefik.http.routers.nayeapp.rule=Host(`nayeapp.byronrm.com`)"
+        - "traefik.http.middlewares.nayeapp-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.nayeapp.middlewares=pgnayeapporeno-https-redirect"
+        - "traefik.http.routers.nayeapp-secure.entrypoints=https"
+        - "traefik.http.routers.nayeapp-secure.rule=Host(`nayeapp.byronrm.com`)"
+        - "traefik.http.routers.nayeapp-secure.tls=true"
+        - "traefik.http.routers.nayeapp-secure.tls.certresolver=http"
+        - "traefik.http.routers.nayeapp-secure.service=nayeapp"
+        - "traefik.http.services.nayeapp.loadbalancer.server.port=80"
+        - "traefik.docker.network=traefik-public"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
